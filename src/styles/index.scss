@@ -14,5 +14,17 @@ html {
 }
 
 p {
+  z-index: 999;
   font-size: $paragraph-font-size;
+  position: fixed;
+  color: white;
+
+}
+
+canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  margin: 0;
+  padding: 0;
 }
