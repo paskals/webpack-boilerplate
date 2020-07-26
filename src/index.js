@@ -44,7 +44,7 @@ const s = sk => {
     if (!running) {
       return;
     }
-    // sk.background(background);
+    sk.background(background);
     walkers.forEach(walker => {
       walker.step(sk);
       // walker.checkEdges(sk);
@@ -92,7 +92,7 @@ const heights = [];
 const samples = 1000;
 const perlinStep = 0.1;
 const getPerlinV = (sk, offset, range) => {
-  return sk.map(sk.noise(offset), 0, 1, 0, range);
+  return sk.map(sk.noise(offset), 0, 1, -range / 2, range / 2);
 };
 
 class Walker {
@@ -113,36 +113,36 @@ class Walker {
   render(sk) {
     sk.stroke(220);
     if (this.oldPosition.x != -1 && this.y != -1) {
-      // sk.stroke(200);
-      // // sk.fill(220);
-      // sk.line(
-      //   this.oldPosition.x,
-      //   this.oldPosition.y,
-      //   this.position.x,
-      //   this.position.y
-      // );
-      // sk.ellipse(this.position.x, this.position.y, 16, 16);
-
-      sk.noFill();
-      sk.curve(
-        getPerlinV(sk, this.noff.x - 3 * perlinStep, sk.width),
-        getPerlinV(sk, this.noff.y - 3 * perlinStep, sk.height),
-        getPerlinV(sk, this.noff.x - 2 * perlinStep, sk.width),
-        getPerlinV(sk, this.noff.y - 2 * perlinStep, sk.height),
-        getPerlinV(sk, this.noff.x - 1 * perlinStep, sk.width),
-        getPerlinV(sk, this.noff.y - 1 * perlinStep, sk.height),
-        getPerlinV(sk, this.noff.x, sk.width),
-        getPerlinV(sk, this.noff.y, sk.height)
+      sk.stroke(200);
+      sk.fill(220);
+      sk.line(
+        this.oldPosition.x,
+        this.oldPosition.y,
+        this.position.x,
+        this.position.y
       );
+      sk.ellipse(this.position.x, this.position.y, 16, 16);
+
+      // sk.noFill();
+      // sk.curve(
+      //   getPerlinV(sk, this.noff.x - 3 * perlinStep, sk.width),
+      //   getPerlinV(sk, this.noff.y - 3 * perlinStep, sk.height),
+      //   getPerlinV(sk, this.noff.x - 2 * perlinStep, sk.width),
+      //   getPerlinV(sk, this.noff.y - 2 * perlinStep, sk.height),
+      //   getPerlinV(sk, this.noff.x - 1 * perlinStep, sk.width),
+      //   getPerlinV(sk, this.noff.y - 1 * perlinStep, sk.height),
+      //   getPerlinV(sk, this.noff.x, sk.width),
+      //   getPerlinV(sk, this.noff.y, sk.height)
+      // )
     }
   }
 
   step(sk) {
-    // let mouse = sk.createVector(sk.mouseX, sk.mouseY);
-    // let dir = p5.Vector.sub(mouse, this.position);
+    let mouse = sk.createVector(sk.mouseX, sk.mouseY);
+    let dir = p5.Vector.sub(mouse, this.position);
 
-    // dir.mult(0.1);
-    // dir.mult(1 / dir.mag());
+    dir.mult(0.1);
+    dir.mult(1 / dir.mag());
     if (this.position.x != -1 && this.y != -1)
       this.oldPosition.set(this.position);
     // let step = sk.random(0, 4);
@@ -163,16 +163,16 @@ class Walker {
 
     // this.acceleration.x = getPerlinV(sk, this.noff.x, 0.1);
     // this.acceleration.y = getPerlinV(sk, this.noff.y, 0.1);
-    // let drag = sk.createVector().set(this.velocity);
-    // drag.normalize();
-    // drag.mult(-this.drag);
+    let drag = sk.createVector().set(this.velocity);
+    drag.normalize();
+    drag.mult(-this.drag);
 
-    // this.acceleration = dir;
-    // this.acceleration.add(drag);
-    // this.velocity.add(this.acceleration);
+    this.acceleration = dir;
+    this.acceleration.add(drag);
+    this.velocity.add(this.acceleration);
 
-    // this.velocity.limit(this.topSpeed);
-    // this.position.add(this.velocity);
+    this.velocity.limit(this.topSpeed);
+    this.position.add(this.velocity);
 
     this.noff.add(perlinStep, perlinStep, 0);
   }
