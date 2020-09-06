@@ -34,11 +34,12 @@ const s = sk => {
     if (!running) {
       return;
     }
+
     // walker.step(sk);
     // walker.render(sk);
     sk.background(background);
     spiral.render(sk);
-
+    spiral.rStep += 0.001;
     if (record) {
       sk.recordFrame();
       if (frame === frames) {
@@ -69,13 +70,13 @@ class Spiral {
   constructor(sk) {
     this.center = sk.createVector(sk.width / 2, sk.height / 2);
     this.limit = Math.sqrt(Math.pow(sk.height, 2) + Math.pow(sk.width, 2)) / 2;
-    this.rStep = 0.001;
+    this.rStep = 0.0001;
     this.magStep = 0.01;
     this.gap = 10; // how much the radius grows per revolution
   }
   render(sk) {
     sk.stroke("red");
-    this.rStep = sk.map(sk.mouseX, 0, sk.width, 0.0001, 0.3);
+    // this.rStep = sk.map(sk.mouseX, 0, sk.width, 0.0001, 0.3);
     this.magStep = sk.map(sk.mouseY, 0, sk.height, 0, 5);
 
     // sk.circle(this.center.x, this.center.y, this.limit * 2);
@@ -89,8 +90,9 @@ class Spiral {
       let position = this.center.copy().add(radiusPosition);
       let oldPosition = this.center.copy().add(oldRadiusPosition);
 
-      sk.line(oldPosition.x, oldPosition.y, position.x, position.y);
-
+      // sk.line(oldPosition.x, oldPosition.y, position.x, position.y);
+      sk.fill("red");
+      sk.circle(position.x, position.y, 2);
       oldRadiusPosition = radiusPosition.copy();
       radiusPosition.rotate(this.rStep);
       let off = getPerlinV(sk, 123098 + perlinOffset, this.magStep, 0.2);
