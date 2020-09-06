@@ -14,7 +14,6 @@ const record = false;
 let running = true;
 const background = 6;
 let canvas;
-let previousMouseX = 0;
 let walker;
 let spiral;
 const s = sk => {
@@ -37,12 +36,9 @@ const s = sk => {
     }
     // walker.step(sk);
     // walker.render(sk);
-    if (sk.mouseX != previousMouseX) {
-      sk.background(background);
+    sk.background(background);
+    spiral.render(sk);
 
-      spiral.render(sk);
-      previousMouseX = sk.mouseX;
-    }
     if (record) {
       sk.recordFrame();
       if (frame === frames) {
@@ -73,19 +69,23 @@ class Spiral {
   constructor(sk) {
     this.center = sk.createVector(sk.width / 2, sk.height / 2);
     this.limit = Math.sqrt(Math.pow(sk.height, 2) + Math.pow(sk.width, 2)) / 2;
-    this.rStep = 0.1;
+    this.rStep = 0.001;
+    this.magStep = 0.01;
     this.gap = 10; // how much the radius grows per revolution
   }
   render(sk) {
     sk.stroke("red");
-    this.rStep = sk.map(sk.mouseX, 0, sk.width, 0.001, 10);
+    this.rStep = sk.map(sk.mouseX, 0, sk.width, 0.0001, 0.3);
+    this.magStep = sk.map(sk.mouseY, 0, sk.height, 0, 5);
 
     // sk.circle(this.center.x, this.center.y, this.limit * 2);
     let r = 0.1;
     let radiusPosition = sk.createVector(0, 1);
     let oldRadiusPosition = radiusPosition;
-
-    while (r < this.limit) {
+    let perlinOffset = 0;
+    let maxiter = 100000;
+    let i = 0;
+    while (r < this.limit && i < maxiter) {
       let position = this.center.copy().add(radiusPosition);
       let oldPosition = this.center.copy().add(oldRadiusPosition);
 
@@ -93,9 +93,11 @@ class Spiral {
 
       oldRadiusPosition = radiusPosition.copy();
       radiusPosition.rotate(this.rStep);
-      let off = getPerlinV(sk, 123098 + r * 3, 2, 1);
+      let off = getPerlinV(sk, 123098 + perlinOffset, this.magStep, 0.2);
+      perlinOffset += 0.1;
       radiusPosition.setMag(radiusPosition.mag() + off);
       r = radiusPosition.mag();
+      i++;
     }
   }
 }
