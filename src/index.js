@@ -4,6 +4,7 @@ import "./styles/index.scss";
 //const zstep = 0.001;
 //const cellSize = 15;
 import * as p5 from "p5";
+import { inherits } from "util";
 
 const record = false;
 // const filePrefix = 'chapter-1';
@@ -11,10 +12,11 @@ const record = false;
 // const frames = 360;
 
 let running = true;
-const background = 60;
+const background = 6;
 let canvas;
 
 let walker;
+let spiral;
 const s = sk => {
   sk.setup = () => {
     console.log("setup");
@@ -23,6 +25,7 @@ const s = sk => {
     sk.background(background);
 
     walker = new Walker(sk);
+    spiral = new Spiral(sk);
     if (record) {
       sk.frameRate(1);
     }
@@ -32,10 +35,11 @@ const s = sk => {
     if (!running) {
       return;
     }
-    sk.background(background, 15);
+    sk.background(background, 5);
     walker.step(sk);
     walker.render(sk);
 
+    spiral.render(sk);
     if (record) {
       sk.recordFrame();
       if (frame === frames) {
@@ -62,6 +66,25 @@ const getPerlinV = (sk, offset, range, center) => {
   return sk.map(sk.noise(offset), 0, 1, center - range / 2, center + range / 2);
 };
 
+class Spiral {
+  constructor(sk) {
+    this.center = sk.createVector(sk.width / 2, sk.height / 2);
+    this.limit = Math.sqrt(Math.pow(sk.height, 2) + Math.pow(sk.width, 2)) / 2;
+    this.rStep = 0.1;
+    this.gap = 10; // how much the radius grows per revolution
+  }
+  render(sk) {
+    sk.stroke("red");
+    sk.circle(this.center.x, this.center.y, this.limit * 2);
+    let r = 0.1;
+    let position = this.center;
+    let oldPosition = this.center;
+    while (r < this.limit) {
+      r += this.rStep;
+    }
+  }
+}
+
 class Walker {
   constructor(sk) {
     this.position = sk.createVector(sk.random(sk.width), sk.random(sk.height));
@@ -72,7 +95,8 @@ class Walker {
   }
 
   render(sk) {
-    sk.stroke(250);
+    sk.colorMode(sk.HSB, 255);
+    sk.stroke(sk.color(getPerlinV(sk, this.noff.x, 255, 127), 220, 255));
     if (this.oldPosition.x != -1 && this.y != -1) {
       sk.noFill();
       sk.curve(
