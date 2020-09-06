@@ -1,5 +1,3 @@
-// Test import of a JavaScript function, an SVG, and Sass
-
 import "./styles/index.scss";
 
 //const scl = 0.001;
@@ -15,10 +13,7 @@ const record = false;
 let running = true;
 const background = 60;
 let canvas;
-// let p;
 
-// let position;
-// let velocity;
 let walker;
 const s = sk => {
   sk.setup = () => {
@@ -37,9 +32,8 @@ const s = sk => {
     if (!running) {
       return;
     }
-    sk.background(background, 5);
+    sk.background(background, 15);
     walker.step(sk);
-    // walker.checkEdges(sk);
     walker.render(sk);
 
     if (record) {
@@ -63,8 +57,6 @@ const s = sk => {
 
 const P5 = new p5(s);
 
-const heights = [];
-const samples = 1000;
 const perlinStep = 0.1;
 const getPerlinV = (sk, offset, range, center) => {
   return sk.map(sk.noise(offset), 0, 1, center - range / 2, center + range / 2);
@@ -74,9 +66,7 @@ class Walker {
   constructor(sk) {
     this.position = sk.createVector(sk.random(sk.width), sk.random(sk.height));
     this.oldPosition = sk.createVector(-1, -1);
-    // for (let i = 0; i < samples; i++) {
-    //   heights.push(0);
-    // }
+
     this.noff = sk.createVector(sk.random(1000), sk.random(1000));
     this.range = 1000;
   }
@@ -103,19 +93,5 @@ class Walker {
       this.oldPosition.set(this.position);
 
     this.noff.add(perlinStep, perlinStep, 0);
-  }
-
-  checkEdges(sk) {
-    if (this.position.x > sk.width) {
-      this.position.x = 0;
-    } else if (this.position.x < 0) {
-      this.position.x = sk.width;
-    }
-
-    if (this.position.y > sk.height) {
-      this.position.y = 0;
-    } else if (this.position.y < 0) {
-      this.position.y = sk.height;
-    }
   }
 }
