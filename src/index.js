@@ -35,11 +35,12 @@ const s = sk => {
     if (!running) {
       return;
     }
-    sk.background(background, 5);
-    walker.step(sk);
-    walker.render(sk);
+    sk.background(background);
+    // walker.step(sk);
+    // walker.render(sk);
 
     spiral.render(sk);
+
     if (record) {
       sk.recordFrame();
       if (frame === frames) {
@@ -49,7 +50,7 @@ const s = sk => {
   };
 
   sk.mouseClicked = () => {
-    running = !running;
+    // running = !running;
   };
 
   sk.recordFrame = () => {
@@ -75,12 +76,22 @@ class Spiral {
   }
   render(sk) {
     sk.stroke("red");
-    sk.circle(this.center.x, this.center.y, this.limit * 2);
+    this.rStep = sk.map(sk.mouseX, 0, sk.width, 0.0001, 0.1);
+
+    // sk.circle(this.center.x, this.center.y, this.limit * 2);
     let r = 0.1;
-    let position = this.center;
-    let oldPosition = this.center;
+    let radiusPosition = sk.createVector(0, 1);
+    let oldRadiusPosition = radiusPosition;
     while (r < this.limit) {
-      r += this.rStep;
+      let position = this.center.copy().add(radiusPosition);
+      let oldPosition = this.center.copy().add(oldRadiusPosition);
+
+      sk.line(oldPosition.x, oldPosition.y, position.x, position.y);
+
+      oldRadiusPosition = radiusPosition.copy();
+      radiusPosition = radiusPosition.rotate(this.rStep);
+      radiusPosition = radiusPosition.setMag(radiusPosition.mag() + 0.1);
+      r = radiusPosition.mag();
     }
   }
 }
@@ -96,7 +107,7 @@ class Walker {
 
   render(sk) {
     sk.colorMode(sk.HSB, 255);
-    sk.stroke(sk.color(getPerlinV(sk, this.noff.x, 255, 127), 220, 255));
+    sk.stroke(sk.color(getPerlinV(sk, this.noff.x + 1000, 255, 127), 220, 255));
     if (this.oldPosition.x != -1 && this.y != -1) {
       sk.noFill();
       sk.curve(
