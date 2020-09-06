@@ -14,7 +14,7 @@ const record = false;
 let running = true;
 const background = 6;
 let canvas;
-
+let previousMouseX = 0;
 let walker;
 let spiral;
 const s = sk => {
@@ -35,12 +35,14 @@ const s = sk => {
     if (!running) {
       return;
     }
-    sk.background(background);
     // walker.step(sk);
     // walker.render(sk);
+    if (sk.mouseX != previousMouseX) {
+      sk.background(background);
 
-    spiral.render(sk);
-
+      spiral.render(sk);
+      previousMouseX = sk.mouseX;
+    }
     if (record) {
       sk.recordFrame();
       if (frame === frames) {
@@ -50,7 +52,7 @@ const s = sk => {
   };
 
   sk.mouseClicked = () => {
-    // running = !running;
+    running = !running;
   };
 
   sk.recordFrame = () => {
@@ -76,12 +78,13 @@ class Spiral {
   }
   render(sk) {
     sk.stroke("red");
-    this.rStep = sk.map(sk.mouseX, 0, sk.width, 0.0001, 0.1);
+    this.rStep = sk.map(sk.mouseX, 0, sk.width, 0.001, 10);
 
     // sk.circle(this.center.x, this.center.y, this.limit * 2);
     let r = 0.1;
     let radiusPosition = sk.createVector(0, 1);
     let oldRadiusPosition = radiusPosition;
+
     while (r < this.limit) {
       let position = this.center.copy().add(radiusPosition);
       let oldPosition = this.center.copy().add(oldRadiusPosition);
@@ -89,8 +92,9 @@ class Spiral {
       sk.line(oldPosition.x, oldPosition.y, position.x, position.y);
 
       oldRadiusPosition = radiusPosition.copy();
-      radiusPosition = radiusPosition.rotate(this.rStep);
-      radiusPosition = radiusPosition.setMag(radiusPosition.mag() + 0.1);
+      radiusPosition.rotate(this.rStep);
+      let off = getPerlinV(sk, 123098 + r * 3, 2, 1);
+      radiusPosition.setMag(radiusPosition.mag() + off);
       r = radiusPosition.mag();
     }
   }
