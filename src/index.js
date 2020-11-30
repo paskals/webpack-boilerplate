@@ -2,9 +2,6 @@
 
 import "./styles/index.scss";
 
-//const scl = 0.001;
-//const zstep = 0.001;
-//const cellSize = 15;
 import * as p5 from "p5";
 
 const record = false;
@@ -50,22 +47,7 @@ const s = sk => {
       // walker.checkEdges(sk);
       walker.render(sk);
     });
-    // position.add(velocity);
-
-    // if ((position.x > sk.width) || (position.x < 0)) {
-    //   velocity.x = velocity.x * -1;
-    // }
-    // if ((position.y > sk.height) || (position.y < 0)) {
-    //   velocity.y = velocity.y * -1;
-    // }
-
-    // // Display circle at x position
-    // sk.stroke(255);
-    // sk.strokeWeight(2);
-    // sk.fill(127);
-    // sk.ellipse(position.x, position.y, 48, 48);
-
-    // p.html(sk.frameRate().toFixed(2) + ' ' + sk.frameCount);
+    
 
     if (record) {
       sk.recordFrame();
@@ -88,12 +70,7 @@ const s = sk => {
 
 const P5 = new p5(s);
 
-const heights = [];
 const samples = 1000;
-const perlinStep = 0.1;
-const getPerlinV = (sk, offset, range) => {
-  return sk.map(sk.noise(offset), 0, 1, -range / 2, range / 2);
-};
 
 class Walker {
   constructor(sk) {
@@ -101,10 +78,7 @@ class Walker {
     this.velocity = sk.createVector(0, 0);
     this.position = sk.createVector(sk.random(sk.width), sk.random(sk.height));
     this.oldPosition = sk.createVector(-1, -1);
-    // for (let i = 0; i < samples; i++) {
-    //   heights.push(0);
-    // }
-    this.noff = sk.createVector(sk.random(1000), sk.random(1000));
+    
     this.sampleStep = Math.floor(sk.width / samples);
     this.topSpeed = 20;
     this.drag = 0.01;
@@ -122,59 +96,41 @@ class Walker {
         this.position.y
       );
       sk.ellipse(this.position.x, this.position.y, 16, 16);
-
-      // sk.noFill();
-      // sk.curve(
-      //   getPerlinV(sk, this.noff.x - 3 * perlinStep, sk.width),
-      //   getPerlinV(sk, this.noff.y - 3 * perlinStep, sk.height),
-      //   getPerlinV(sk, this.noff.x - 2 * perlinStep, sk.width),
-      //   getPerlinV(sk, this.noff.y - 2 * perlinStep, sk.height),
-      //   getPerlinV(sk, this.noff.x - 1 * perlinStep, sk.width),
-      //   getPerlinV(sk, this.noff.y - 1 * perlinStep, sk.height),
-      //   getPerlinV(sk, this.noff.x, sk.width),
-      //   getPerlinV(sk, this.noff.y, sk.height)
-      // )
     }
   }
 
   step(sk) {
-    let mouse = sk.createVector(sk.mouseX, sk.mouseY);
+    let mouse = sk.createVector(sk.mouseX, sk.mouseY);// get the mouse location
+
+    //Compute direction
     let dir = p5.Vector.sub(mouse, this.position);
 
-    dir.mult(0.1);
-    dir.mult(1 / dir.mag());
+    // normalize direction vector (set to mag 1)
+    dir.normalize();
+    // Scale (down) direction magnitude
+    dir.mult(0.5);
+    // dir.mult(1 / dir.mag());
+
+    // update oldPosition
     if (this.position.x != -1 && this.y != -1)
       this.oldPosition.set(this.position);
-    // let step = sk.random(0, 4);
-    // step = step * step;
-
-    // this.position.x += sk.random(-step, step);
-    // this.position.y += sk.random(-step, step);
-    /// test
-    // let posT = sk.width / 2 + sk.random(-step, step);
-    // let bucket = Math.floor(posT / this.sampleStep);
-    // heights[bucket]++;
-
-    // sk.noStroke()
-    // sk.fill(255, 90);
-    // sk.ellipse(posT, sk.height - heights[bucket], 2, 2);
-
-    ///
-
-    // this.acceleration.x = getPerlinV(sk, this.noff.x, 0.1);
-    // this.acceleration.y = getPerlinV(sk, this.noff.y, 0.1);
-    let drag = sk.createVector().set(this.velocity);
+    
+    // Calculate drag
+    let drag = sk.createVector().set(this.velocity);// equal to current velocity
     drag.normalize();
-    drag.mult(-this.drag);
+    drag.mult(-this.drag); // multiply by negative drag coefficient
 
+    // accelartion equal to direction
     this.acceleration = dir;
+    // Add drag to acceleration
     this.acceleration.add(drag);
+    //Add acceleration to velocity
     this.velocity.add(this.acceleration);
 
+    // Limit top speed
     this.velocity.limit(this.topSpeed);
     this.position.add(this.velocity);
 
-    this.noff.add(perlinStep, perlinStep, 0);
   }
 
   checkEdges(sk) {
