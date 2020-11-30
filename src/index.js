@@ -18,7 +18,10 @@ let position;
 let velocity;
 let walker;
 let walkers = [];
-const s = sk => {
+let wind;
+let gravity;
+
+const s = (sk) => {
   sk.setup = () => {
     console.log("setup");
     canvas = sk.createCanvas(window.innerWidth, window.innerHeight);
@@ -35,6 +38,8 @@ const s = sk => {
     if (record) {
       sk.frameRate(1);
     }
+    wind = sk.createVector(0, 0.5);
+    gravity = sk.createVector(1, 0);
   };
   /// DRAW///
   sk.draw = () => {
@@ -42,12 +47,33 @@ const s = sk => {
       return;
     }
     sk.background(background);
-    walkers.forEach(walker => {
+    walkers.forEach((walker) => {
+      let mouse = sk.createVector(sk.mouseX, sk.mouseY); // get the mouse location
+
+      //Compute direction
+      let dir = p5.Vector.sub(mouse, walker.position);
+      // normalize direction vector (set to mag 1)
+      dir.normalize();
+      // dir.mult(1 / dir.mag());
+
+      //Apply direction as a force toward the mouse pointer
+      // walker.applyForce(dir.mult(2));
+
+      // Calculate drag
+      let drag = sk.createVector().set(walker.velocity); // equal to current velocity
+      drag.normalize();
+      drag.mult(-0.1); // multiply by negative drag coefficient
+
+      walker.applyForce(drag);
+
+      walker.applyForce(wind);
+      walker.applyForce(gravity);
+
       walker.step(sk);
+      walker.checkEdges(sk);
       // walker.checkEdges(sk);
       walker.render(sk);
     });
-    
 
     if (record) {
       sk.recordFrame();
@@ -78,10 +104,11 @@ class Walker {
     this.velocity = sk.createVector(0, 0);
     this.position = sk.createVector(sk.random(sk.width), sk.random(sk.height));
     this.oldPosition = sk.createVector(-1, -1);
-    
+
     this.sampleStep = Math.floor(sk.width / samples);
     this.topSpeed = 20;
-    this.drag = 0.01;
+
+    this.mass = 10;
   }
 
   render(sk) {
@@ -99,31 +126,17 @@ class Walker {
     }
   }
 
+  applyForce(force) {
+    let f_ = p5.Vector.div(force, this.mass);
+
+    this.acceleration.add(f_);
+  }
+
   step(sk) {
-    let mouse = sk.createVector(sk.mouseX, sk.mouseY);// get the mouse location
-
-    //Compute direction
-    let dir = p5.Vector.sub(mouse, this.position);
-
-    // normalize direction vector (set to mag 1)
-    dir.normalize();
-    // Scale (down) direction magnitude
-    dir.mult(0.5);
-    // dir.mult(1 / dir.mag());
-
     // update oldPosition
-    if (this.position.x != -1 && this.y != -1)
+    if (this.position.x != -1 && this.y != -1) {
       this.oldPosition.set(this.position);
-    
-    // Calculate drag
-    let drag = sk.createVector().set(this.velocity);// equal to current velocity
-    drag.normalize();
-    drag.mult(-this.drag); // multiply by negative drag coefficient
-
-    // accelartion equal to direction
-    this.acceleration = dir;
-    // Add drag to acceleration
-    this.acceleration.add(drag);
+    }
     //Add acceleration to velocity
     this.velocity.add(this.acceleration);
 
@@ -131,19 +144,26 @@ class Walker {
     this.velocity.limit(this.topSpeed);
     this.position.add(this.velocity);
 
+    // Reset acceleration at the end of update
+    // This enables adding forces before update
+    this.acceleration.mult(0);
   }
 
   checkEdges(sk) {
     if (this.position.x > sk.width) {
-      this.position.x = 0;
-    } else if (this.position.x < 0) {
       this.position.x = sk.width;
+      this.velocity.x *= -1;
+    } else if (this.position.x < 0) {
+      this.position.x = 0;
+      this.velocity.x *= -1;
     }
 
     if (this.position.y > sk.height) {
-      this.position.y = 0;
-    } else if (this.position.y < 0) {
       this.position.y = sk.height;
+      this.velocity.y *= -1;
+    } else if (this.position.y < 0) {
+      this.position.y = 0;
+      this.velocity.x *= -1;
     }
   }
 }
