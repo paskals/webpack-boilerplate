@@ -29,7 +29,14 @@ const s = (sk) => {
     sk.background(background);
 
     for (let i = 0; i < 10; i++) {
-      walkers.push(new Walker(sk));
+      walkers.push(
+        new Walker(
+          sk,
+          sk.random(0.1, 10),
+          sk.random(sk.width),
+          sk.random(sk.height)
+        )
+      );
     }
     // walker = new Walker(sk);
     position = sk.createVector(100, 100);
@@ -38,7 +45,7 @@ const s = (sk) => {
     if (record) {
       sk.frameRate(1);
     }
-    wind = sk.createVector(0.5, 0);
+    wind = sk.createVector(0.1, 0);
     gravity = sk.createVector(0, 1);
   };
   /// DRAW///
@@ -63,9 +70,9 @@ const s = (sk) => {
       drag.normalize();
       drag.mult(-0.001); // multiply by negative drag coefficient
 
-      walker.applyForce(drag);
+      // walker.applyForce(drag);
 
-      // walker.applyForce(wind);
+      walker.applyForce(wind);
       walker.applyForce(gravity);
 
       walker.step(sk);
@@ -98,16 +105,16 @@ const P5 = new p5(s);
 const samples = 1000;
 
 class Walker {
-  constructor(sk) {
+  constructor(sk, m, x, y) {
     this.acceleration = sk.createVector(0, 0);
     this.velocity = sk.createVector(0, 0);
-    this.position = sk.createVector(sk.random(sk.width), sk.random(sk.height));
+    this.position = sk.createVector(x, y);
     this.oldPosition = sk.createVector(-1, -1);
 
     this.sampleStep = Math.floor(sk.width / samples);
-    this.topSpeed = 20;
+    this.topSpeed = 50;
 
-    this.mass = 1;
+    this.mass = m;
   }
 
   render(sk) {
@@ -121,7 +128,12 @@ class Walker {
         this.position.x,
         this.position.y
       );
-      sk.ellipse(this.position.x, this.position.y, 16, 16);
+      sk.ellipse(
+        this.position.x,
+        this.position.y,
+        this.mass * 10,
+        this.mass * 10
+      );
     }
   }
 
