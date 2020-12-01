@@ -1,75 +1,31 @@
 const multicolor = [
-  '#feae34',
-  '#0099db',
-  '#e43b44',
-  '#3e8948',
-  '#5a6988',
-  '#fee761'
+  "#feae34",
+  "#0099db",
+  "#e43b44",
+  "#3e8948",
+  "#5a6988",
+  "#fee761",
 ];
-const altMulticolor = [
-  '#d32734',
-  '#da7d22',
-  '#e6da29',
-  '#28c641',
-  '#2d93dd',
-];
+const altMulticolor = ["#d32734", "#da7d22", "#e6da29", "#28c641", "#2d93dd"];
 const browns = [
-  '#be4a2f',
-  '#d77643',
-  '#ead4aa',
-  '#e4a672',
-  '#b86f50',
-  '#733e39',
-  '#3e2731'
+  "#be4a2f",
+  "#d77643",
+  "#ead4aa",
+  "#e4a672",
+  "#b86f50",
+  "#733e39",
+  "#3e2731",
 ];
-const redyellow = [
-  '#a22633',
-  '#e43b44',
-  '#f77622',
-  '#feae34',
-  '#fee761'
-];
-const greens = [
-  '#63c74d',
-  '#3e8948',
-  '#265c42',
-  '#193c3e',
-];
-const blues = [
-  '#124e89',
-  '#0099db',
-  '#2ce8f5'
-];
-const lightgreen = [
-  '#f4fbd0',
-  '#68cf68',
-  '#1e9178',
-  '#05241f',
-];
-const crimsonHues = [
-  '#f3deba',
-  '#e1674c',
-  '#cb2233',
-  '#941963',
-  '#420e53',
-];
-const multi3 = [
-  '#ef604a',
-  '#ffd877',
-  '#00cc8b',
-  '#005a75',
-];
-const penny = [
-  '#ffd2a4',
-  '#d38147',
-  '#2f8f9b',
-  '#1b414a'
-];
+const redyellow = ["#a22633", "#e43b44", "#f77622", "#feae34", "#fee761"];
+const greens = ["#63c74d", "#3e8948", "#265c42", "#193c3e"];
+const blues = ["#124e89", "#0099db", "#2ce8f5"];
+const lightgreen = ["#f4fbd0", "#68cf68", "#1e9178", "#05241f"];
+const crimsonHues = ["#f3deba", "#e1674c", "#cb2233", "#941963", "#420e53"];
+const multi3 = ["#ef604a", "#ffd877", "#00cc8b", "#005a75"];
+const penny = ["#ffd2a4", "#d38147", "#2f8f9b", "#1b414a"];
 const colors = penny;
 
-import {
-  centers
-} from "./index"
+import { centers } from "./index";
 
 function choose(arr) {
   return arr[floor(random(0, arr.length))];
@@ -80,8 +36,14 @@ export class Particle {
     this.p5 = p5;
     this.alpha = 0;
     //this.pos = createVector(random(width), random(height));
-    this.pos = p5.createVector(p5.randomGaussian(p5.width / 2, p5.width / 4), p5.randomGaussian(p5.height / 2, p5.height / 4));
-    this.vel = p5.createVector(p5.randomGaussian(2, 2), p5.randomGaussian(2, 2));
+    this.pos = p5.createVector(
+      p5.randomGaussian(p5.width / 2, p5.width / 4),
+      p5.randomGaussian(p5.height / 2, p5.height / 4)
+    );
+    this.vel = p5.createVector(
+      p5.randomGaussian(2, 2),
+      p5.randomGaussian(2, 2)
+    );
     this.acc = p5.createVector(0, 0);
     this.maxspeed = 4;
     this.prevPos = this.pos.copy();
@@ -90,8 +52,7 @@ export class Particle {
     const where = p5.map(this.pos.x, 0, p5.width, 0, 1);
     const from = p5.color(browns[1]);
     const to = p5.color(lightgreen[2]);
-    this.color = yes ? 'f3deba' :
-      p5.lerpColor(from, to, where);
+    this.color = yes ? "f3deba" : p5.lerpColor(from, to, where);
   }
 
   update() {
@@ -153,7 +114,6 @@ export class Particle {
       this.pos.y = height;
       this.updatePrev();
     }
-
   }
   directionAt(x, y) {
     const p = this.p5.createVector(x, y);

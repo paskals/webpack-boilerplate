@@ -19,6 +19,8 @@ let velocity;
 let walker;
 let walkers = [];
 let wind;
+let normalF = 1;
+let frictionC = 0.1;
 let gravity;
 
 const s = (sk) => {
@@ -45,7 +47,7 @@ const s = (sk) => {
     if (record) {
       sk.frameRate(1);
     }
-    wind = sk.createVector(0.1, 0);
+    wind = sk.createVector(0.01, 0);
     gravity = sk.createVector(0, 1);
   };
   /// DRAW///
@@ -73,7 +75,8 @@ const s = (sk) => {
       // walker.applyForce(drag);
 
       walker.applyForce(wind);
-      walker.applyForce(gravity);
+      walker.applyGravity(gravity);
+      walker.applyFriction(frictionC);
 
       walker.step(sk);
       walker.checkEdges(sk);
@@ -139,8 +142,20 @@ class Walker {
 
   applyForce(force) {
     let f_ = p5.Vector.div(force, this.mass);
-
     this.acceleration.add(f_);
+  }
+
+  applyGravity(force) {
+    // Gravity does not depend on mass
+    this.acceleration.add(force);
+  }
+
+  applyFriction(c) {
+    let friction = this.velocity.copy();
+    friction.normalize();
+    friction.mult(-1);
+    friction.mult(c);
+    this.applyForce(friction);
   }
 
   step(sk) {
