@@ -23,6 +23,8 @@ let normalF = 1;
 let frictionC = 0.1;
 let gravity;
 
+let liquid;
+
 const s = (sk) => {
   sk.setup = () => {
     console.log("setup");
@@ -36,7 +38,7 @@ const s = (sk) => {
           sk,
           sk.random(0.1, 10),
           sk.random(sk.width),
-          sk.random(sk.height)
+          sk.random(sk.height / 2)
         )
       );
     }
@@ -49,6 +51,8 @@ const s = (sk) => {
     }
     wind = sk.createVector(0.01, 0);
     gravity = sk.createVector(0, 1);
+
+    liquid = new Liquid(0, sk.height / 2, sk.width, sk.height / 2, 0.1);
   };
   /// DRAW///
   sk.draw = () => {
@@ -56,6 +60,7 @@ const s = (sk) => {
       return;
     }
     sk.background(background);
+    liquid.render(sk);
     walkers.forEach((walker) => {
       let mouse = sk.createVector(sk.mouseX, sk.mouseY); // get the mouse location
 
@@ -74,9 +79,12 @@ const s = (sk) => {
 
       // walker.applyForce(drag);
 
-      walker.applyForce(wind);
+      // walker.applyForce(wind);
       walker.applyGravity(gravity);
       walker.applyFriction(frictionC);
+      if (walker.isInside(liquid)) {
+        walker.applyDrag(liquid.c);
+      }
 
       walker.step(sk);
       walker.checkEdges(sk);
@@ -158,6 +166,42 @@ class Walker {
     this.applyForce(friction);
   }
 
+  applyDrag(c) {
+    let speed = this.velocity.mag();
+    //The force’s magnitude: Cd * v~2~
+    let dragMagnitude = c * speed * speed;
+
+    let drag = this.velocity.copy();
+    drag.mult(-1);
+    //The force's direction: -1 * velocity
+    drag.normalize();
+
+    //Finalize the force: magnitude and direction together.
+    drag.mult(dragMagnitude);
+
+    //Apply the force.
+    this.applyForce(drag);
+  }
+
+  isInside(obj) {
+    try {
+      if (
+        this.position.x > obj.x &&
+        this.position.x < obj.x + obj.w &&
+        this.position.y > obj.y &&
+        this.position.y < obj.y + obj.h
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      console.log(e);
+
+      return false;
+    }
+  }
+
   step(sk) {
     // update oldPosition
     if (this.position.x != -1 && this.y != -1) {
@@ -191,5 +235,22 @@ class Walker {
       this.position.y = 0;
       this.velocity.x *= -1;
     }
+  }
+}
+
+class Liquid {
+  // The liquid object includes a variable defining its coefficient of drag
+  constructor(x_, y_, w_, h_, c_) {
+    this.x = x_;
+    this.y = y_;
+    this.w = w_;
+    this.h = h_;
+    this.c = c_;
+  }
+
+  render(sk) {
+    sk.noStroke();
+    sk.fill(175);
+    sk.rect(this.x, this.y, this.w, this.h);
   }
 }
