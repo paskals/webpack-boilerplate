@@ -20,7 +20,7 @@ let walker;
 let walkers = [];
 let wind;
 let normalF = 1;
-let frictionC = 0.1;
+let frictionC = 0.3;
 let gravity;
 
 let liquid;
@@ -36,7 +36,7 @@ const s = (sk) => {
       walkers.push(
         new Walker(
           sk,
-          sk.random(0.1, 10),
+          sk.random(0.5, 10),
           sk.random(sk.width),
           sk.random(sk.height / 2)
         )
