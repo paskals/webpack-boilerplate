@@ -1,49 +1,52 @@
 import p5 from "p5";
-import Liquid from './liquid';
+import Liquid from "./liquid";
+import Massive from "./massive";
 
+const colors = [
+  "#feae34",
+  "#0099db",
+  "#e43b44",
+  "#3e8948",
+  "#5a6988",
+  "#fee761",
+];
 
-export default class Mover {
-  acceleration: p5.Vector;
-  velocity: p5.Vector;
-  position:  p5.Vector;
+export default class Mover extends Massive {
   oldPosition: p5.Vector;
   topSpeed: number;
-  mass: number;
+  fill: string;
+  radius: number;
 
-  constructor(sk: p5, m: number, x: number, y: number) {
-    this.acceleration = sk.createVector(0, 0);
-    this.velocity = sk.createVector(0, 0);
-    this.position = sk.createVector(x, y);
+  constructor(sk: p5, m: number, x: number, y: number, radius?: number) {
+    super(sk, m, x, y);
+
     this.oldPosition = sk.createVector(-1, -1);
 
     this.topSpeed = 50;
 
-    this.mass = m;
+    this.fill = colors[Math.floor(sk.random(0, colors.length))];
+
+    if (radius) {
+      this.radius = radius;
+    }
   }
 
   render(sk: p5) {
     sk.stroke(220);
     if (this.oldPosition.x != -1 && this.oldPosition.y != -1) {
       sk.stroke(200);
-      sk.fill(220);
+      sk.fill(this.fill);
       sk.line(
         this.oldPosition.x,
         this.oldPosition.y,
         this.position.x,
         this.position.y
       );
-      sk.ellipse(
-        this.position.x,
-        this.position.y,
-        this.mass * 10,
-        this.mass * 10
-      );
-    }
-  }
 
-  applyForce(force: p5.Vector) {
-    const f_ = p5.Vector.div(force, this.mass);
-    this.acceleration.add(f_);
+      const radius = this.radius ? this.radius : this.mass * 10;
+
+      sk.ellipse(this.position.x, this.position.y, radius, radius);
+    }
   }
 
   applyGravity(force: p5.Vector) {
