@@ -16,9 +16,18 @@ export default class Mover extends Massive {
   topSpeed: number;
   fill: string;
   radius: number;
+  shader: p5.Shader;
 
-  constructor(sk: p5, m: number, x: number, y: number, radius?: number) {
+  constructor(
+    sk: p5,
+    m: number,
+    x: number,
+    y: number,
+    shader: p5.Shader,
+    radius?: number
+  ) {
     super(sk, m, x, y);
+    this.shader = shader;
 
     this.oldPosition = sk.createVector(-1, -1);
 
@@ -32,6 +41,7 @@ export default class Mover extends Massive {
   }
 
   render(sk: p5) {
+    // sk.shader(this.shader);
     sk.stroke(220);
     if (this.oldPosition.x != -1 && this.oldPosition.y != -1) {
       sk.stroke(200);
@@ -47,6 +57,7 @@ export default class Mover extends Massive {
 
       sk.ellipse(this.position.x, this.position.y, radius, radius);
     }
+    // sk.rect(0, 0, sk.width, sk.height);
   }
 
   applyGravity(force: p5.Vector) {

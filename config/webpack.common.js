@@ -50,6 +50,13 @@ module.exports = {
         ignore: ["*.DS_Store"],
       },
     ]),
+    new CopyWebpackPlugin([
+      {
+        from: paths.shaders,
+        to: "shaders",
+        ignore: ["*.DS_Store"],
+      },
+    ]),
 
     /**
      * HtmlWebpackPlugin

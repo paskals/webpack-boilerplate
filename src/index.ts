@@ -7,7 +7,7 @@ import Liquid from "./liquid";
 import Mover from "./mover";
 import Gravity from "./gravity";
 
-const gravity = new Gravity(1);
+const gravity = new Gravity(0.001);
 
 const record = false;
 const filePrefix = "chapter-2";
@@ -25,27 +25,36 @@ let wind: p5.Vector;
 const normalF = 1;
 const frictionC = 0.3;
 // let gravity: p5.Vector;
-
 let liquid: Liquid;
 
+let shader: p5.Shader;
+
 const s = (sk: p5) => {
+  sk.preload = () => {
+    // shader = sk.loadShader("./shaders/shader.vert", "./shaders/shader.frag");
+  };
   sk.setup = () => {
     console.log("setup");
-    canvas = sk.createCanvas(window.innerWidth, window.innerHeight, sk.WEBGL);
+    canvas = sk.createCanvas(window.innerWidth, window.innerHeight);
     // p = sk.createP();
     sk.background(background);
-    attractor = new Mover(sk, 100, sk.width / 2, sk.height / 2, 50);
+    attractor = new Mover(sk, 100, sk.width / 2, sk.height / 2, shader, 50);
     attractor.step(sk);
-
+    const middle = sk.createVector(sk.width / 2, sk.height / 2);
     for (let i = 0; i < 50; i++) {
-      movers.push(
-        new Mover(
-          sk,
-          sk.random(0.01, 3),
-          sk.random(sk.width),
-          sk.random(sk.height)
-        )
+      const mover = new Mover(
+        sk,
+        sk.random(0.01, 3),
+        sk.random(sk.width / 4, sk.width / 2 + sk.width / 4),
+        sk.random(sk.height / 4, sk.height / 2 + sk.height / 4),
+        shader
       );
+      const force = p5.Vector.sub(mover.position, middle);
+      force.normalize();
+      force.rotate(90);
+      force.mult(0.5);
+      mover.applyForce(force);
+      movers.push(mover);
     }
     if (record) {
       sk.frameRate(1);
@@ -60,6 +69,7 @@ const s = (sk: p5) => {
     if (!running) {
       return;
     }
+
     sk.background(background);
     const mouse = sk.createVector(sk.mouseX, sk.mouseY); // get the mouse location
 
@@ -109,7 +119,9 @@ const s = (sk: p5) => {
   sk.mouseClicked = () => {
     running = !running;
   };
-
+  sk.windowResized = () => {
+    sk.resizeCanvas(sk.windowWidth, sk.windowHeight);
+  };
   const recordFrame = () => {
     const fileName = `${filePrefix}-${frame.toString().padStart(3, "0")}.png`;
     sk.saveCanvas(canvas, fileName, "png");
