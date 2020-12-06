@@ -31,17 +31,17 @@ let liquid: Liquid;
 const s = (sk: p5) => {
   sk.setup = () => {
     console.log("setup");
-    canvas = sk.createCanvas(window.innerWidth, window.innerHeight);
+    canvas = sk.createCanvas(window.innerWidth, window.innerHeight, sk.WEBGL);
     // p = sk.createP();
     sk.background(background);
-    attractor = new Mover(sk, 50, sk.width / 2, sk.height / 2, 50);
+    attractor = new Mover(sk, 100, sk.width / 2, sk.height / 2, 50);
     attractor.step(sk);
 
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 50; i++) {
       movers.push(
         new Mover(
           sk,
-          sk.random(0.1, 3),
+          sk.random(0.01, 3),
           sk.random(sk.width),
           sk.random(sk.height)
         )
@@ -61,39 +61,41 @@ const s = (sk: p5) => {
       return;
     }
     sk.background(background);
+    const mouse = sk.createVector(sk.mouseX, sk.mouseY); // get the mouse location
+
     // liquid.render(sk);
-    // gravity.applyAttractor(sk, attractor, movers);
-    gravity.applyAll(sk, movers.concat(attractor));
+    gravity.applyAttractor(sk, attractor, movers);
+    // gravity.applyAll(sk, movers.concat(attractor));
+    attractor.position = mouse;
+    attractor.step(sk);
     attractor.render(sk);
 
-    movers.forEach((walker) => {
-      const mouse = sk.createVector(sk.mouseX, sk.mouseY); // get the mouse location
-
+    movers.forEach((mover) => {
       // Compute direction
-      // const dir = p5.Vector.sub(mouse, walker.position);
+      // const dir = p5.Vector.sub(mouse, mover.position);
       // normalize direction vector (set to mag 1)
       // dir.normalize();
 
       // Apply direction as a force toward the mouse pointer
-      // walker.applyForce(dir.mult(0.2));
+      // mover.applyForce(dir.mult(1));
 
       // Calculate drag
-      // const drag = sk.createVector().set(walker.velocity); // equal to current velocity
+      // const drag = sk.createVector().set(mover.velocity); // equal to current velocity
       // drag.normalize();
       // drag.mult(-0.001); // multiply by negative drag coefficient
 
-      // walker.applyForce(drag);
+      // mover.applyForce(drag);
 
-      // walker.applyForce(wind);
-      // walker.applyGravity(gravity);
-      // walker.applyFriction(frictionC);
-      // if (walker.isInside(liquid)) {
-      //   walker.applyDrag(liquid.c);
+      // mover.applyForce(wind);
+      // mover.applyGravity(gravity);
+      // mover.applyFriction(frictionC);
+      // if (mover.isInside(liquid)) {
+      //   mover.applyDrag(liquid.c);
       // }
-      walker.step(sk);
-      // walker.checkEdges(sk);
-      // walker.checkEdges(sk);
-      walker.render(sk);
+      mover.step(sk);
+      // mover.checkEdges(sk);
+      // mover.checkEdges(sk);
+      mover.render(sk);
     });
 
     if (record) {
