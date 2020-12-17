@@ -12,7 +12,7 @@ const colors = [
 ];
 
 export default class Mover extends Massive {
-  oldPosition: p5.Vector;
+  oldPositions: p5.Vector[];
   topSpeed: number;
   fill: string;
   radius: number;
@@ -29,7 +29,7 @@ export default class Mover extends Massive {
     super(sk, m, x, y);
     this.shader = shader;
 
-    this.oldPosition = sk.createVector(-1, -1);
+    this.oldPositions = [sk.createVector(x, y)];
 
     this.topSpeed = 50;
 
@@ -42,22 +42,40 @@ export default class Mover extends Massive {
 
   render(sk: p5) {
     // sk.shader(this.shader);
-    sk.stroke(220);
-    if (this.oldPosition.x != -1 && this.oldPosition.y != -1) {
-      sk.stroke(200);
-      sk.fill(this.fill);
-      sk.line(
-        this.oldPosition.x,
-        this.oldPosition.y,
-        this.position.x,
-        this.position.y
-      );
+    // this.drawLine(sk);
 
-      const radius = this.radius ? this.radius : this.mass * 10;
+    sk.strokeWeight(2);
 
-      sk.ellipse(this.position.x, this.position.y, radius, radius);
-    }
+    sk.stroke(200);
+    sk.fill(this.fill);
+
+    const radius = this.radius ? this.radius : this.mass * 10;
+
+    sk.ellipse(this.position.x, this.position.y, radius, radius);
+
     // sk.rect(0, 0, sk.width, sk.height);
+  }
+  drawLine(sk: p5) {
+    const length = 30;
+    if (this.oldPositions.length > length) {
+      this.oldPositions.shift();
+    }
+    sk.stroke(220, 255 / length + 10);
+    let el = null;
+    for (let i = 0; i < this.oldPositions.length; i++) {
+      el = this.oldPositions[i];
+      if (i + 1 < this.oldPositions.length) {
+        sk.strokeWeight(1);
+        sk.line(
+          el.x,
+          el.y,
+          this.oldPositions[i + 1].x,
+          this.oldPositions[i + 1].y
+        );
+      }
+      sk.stroke(220, 255 / (length - i) + 10);
+    }
+    sk.line(el.x, el.y, this.position.x, this.position.y);
   }
 
   applyGravity(force: p5.Vector) {
@@ -111,9 +129,9 @@ export default class Mover extends Massive {
 
   step(sk: p5) {
     // update oldPosition
-    if (this.position.x != -1 && this.position.y != -1) {
-      this.oldPosition.set(this.position);
-    }
+
+    this.oldPositions.push(this.position.copy());
+
     // Add acceleration to velocity
     this.velocity.add(this.acceleration);
 

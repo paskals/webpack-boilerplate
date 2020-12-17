@@ -7,7 +7,7 @@ import Liquid from "./liquid";
 import Mover from "./mover";
 import Gravity from "./gravity";
 
-const gravity = new Gravity(0.001);
+const gravity = new Gravity(0.1);
 
 const record = false;
 const filePrefix = "chapter-2";
@@ -74,9 +74,9 @@ const s = (sk: p5) => {
     const mouse = sk.createVector(sk.mouseX, sk.mouseY); // get the mouse location
 
     // liquid.render(sk);
-    gravity.applyAttractor(sk, attractor, movers);
-    // gravity.applyAll(sk, movers.concat(attractor));
-    attractor.position = mouse;
+    // gravity.applyAttractor(sk, attractor, movers);
+    gravity.applyAll(sk, movers.concat(attractor));
+    // attractor.position = mouse;
     attractor.step(sk);
     attractor.render(sk);
 
