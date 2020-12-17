@@ -40,21 +40,18 @@ const s = (sk: p5) => {
     sk.background(background);
     const mouse = sk.createVector(sk.mouseX, sk.mouseY); // get the mouse location
     /////////////////////
-    const center = sk.createVector(sk.width / 2, sk.height / 2);
-    let line = sk.createVector(0, 50);
-    line.rotate(angle);
-    let line2 = line.copy().rotate(Math.PI);
-    line = center.copy().add(line);
-    line2 = center.copy().add(line2);
+    sk.translate(sk.width / 2, sk.height / 2);
+    sk.rotate(angle);
+    // const center = sk.createVector(sk.width / 2, sk.height / 2);
+
     sk.strokeWeight(2);
 
     sk.stroke(150);
     sk.fill(220);
-    sk.line(center.x, center.y, line.x, line.y);
-    sk.line(center.x, center.y, line2.x, line2.y);
+    sk.line(-50, 0, 50, 0);
 
-    sk.ellipse(line.x, line.y, 30, 30);
-    sk.ellipse(line2.x, line2.y, 30, 30);
+    sk.ellipse(50, 0, 30, 30);
+    sk.ellipse(-50, 0, 30, 30);
 
     angle += increment;
     ///////////////////////
