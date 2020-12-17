@@ -16,7 +16,8 @@ let running = true;
 const background = "#f6ea50";
 let canvas: p5.Renderer;
 // let p;
-
+var angle = 0;
+const increment = 0.03;
 const s = (sk: p5) => {
   sk.preload = () => {
     // shader = sk.loadShader("./shaders/shader.vert", "./shaders/shader.frag");
@@ -38,7 +39,25 @@ const s = (sk: p5) => {
 
     sk.background(background);
     const mouse = sk.createVector(sk.mouseX, sk.mouseY); // get the mouse location
+    /////////////////////
+    const center = sk.createVector(sk.width / 2, sk.height / 2);
+    let line = sk.createVector(0, 50);
+    line.rotate(angle);
+    let line2 = line.copy().rotate(Math.PI);
+    line = center.copy().add(line);
+    line2 = center.copy().add(line2);
+    sk.strokeWeight(2);
 
+    sk.stroke(150);
+    sk.fill(220);
+    sk.line(center.x, center.y, line.x, line.y);
+    sk.line(center.x, center.y, line2.x, line2.y);
+
+    sk.ellipse(line.x, line.y, 30, 30);
+    sk.ellipse(line2.x, line2.y, 30, 30);
+
+    angle += increment;
+    ///////////////////////
     if (record) {
       recordFrame();
       if (frame === frames) {
