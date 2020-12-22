@@ -15,7 +15,7 @@ const frames = 360;
 const gravity = new Gravity(0.1);
 
 let running = true;
-const background = "#f6ea50";
+const background = "#f6ea5010";
 let canvas: p5.Renderer;
 // let p;
 let angle = 0;
@@ -25,7 +25,6 @@ const increment = 0.03;
 
 let attractor: Mover;
 const movers: Mover[] = [];
-
 const s = (sk: p5) => {
   // sk.frameRate(120);
   sk.preload = () => {
@@ -63,30 +62,32 @@ const s = (sk: p5) => {
     if (!running) {
       return;
     }
-
+    sk.blendMode(sk.OVERLAY);
     sk.background(background);
+
+    sk.blendMode(sk.BLEND);
     const mouse = sk.createVector(sk.mouseX, sk.mouseY); // get the mouse location
     let period = 120;
-    let amplitude = 300;
-    angle = sk.millis() / 1000;
+    let amplitude = 600;
+
+    angle = 0;
     // Calculating horizontal location according to the formula for simple harmonic motion
     // let x = amplitude * sk.cos(angle);
     // angle += aVelocity;
 
     sk.ellipseMode(sk.CENTER);
-    sk.stroke(150);
+    sk.stroke(100);
     sk.strokeWeight(2);
     // sk.fill(220, 200);
     sk.noFill();
-
     sk.beginShape();
     for (let x = 0; x <= sk.width; x += 10) {
       // 1) Calculate the y location according to amplitude and sine of the angle.
-      let y = amplitude * sk.sin(angle) + sk.height / 2;
+      let y = amplitude * sk.noise(angle, sk.millis() / 1000) + 200;
 
       // 2) Draw a circle at the (x,y) location.
       // sk.ellipse(x, y + sk.height / 2, 48, 48);
-      sk.vertex(x, y);
+      sk.curveVertex(x, y);
       // 3) Increment the angle according to angular velocity.
       angle += aVelocity;
     }
