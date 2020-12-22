@@ -49,12 +49,14 @@ export default class Mover extends Rotating {
     sk.fill(this.fill);
     sk.strokeWeight(2);
     const radius = this.radius ? this.radius : this.mass * 10;
+    let xAdd = 2 * sk.cos((this.angle * 10) / this.mass);
+    let yAdd = 2 * sk.sin((this.angle * 10) / this.mass);
 
     sk.push();
-    sk.translate(this.position.x, this.position.y);
-    sk.rotate(this.angle);
+    sk.translate(this.position.x + yAdd, this.position.y + xAdd);
+    // sk.rotate(this.angle);
 
-    sk.rect(0, 0, radius, radius);
+    sk.ellipse(0, 0, radius, radius);
 
     sk.pop();
 
@@ -146,7 +148,7 @@ export default class Mover extends Rotating {
     this.velocity.limit(this.topSpeed);
     this.position.add(this.velocity);
 
-    this.aAcceleration = this.acceleration.x / 100;
+    this.aAcceleration = this.acceleration.x / 10;
 
     this.aVelocity += this.aAcceleration;
     // this.aVelocity = sk.constrain(this.aVelocity, -0.1, 0.1);

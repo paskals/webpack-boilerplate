@@ -19,6 +19,7 @@ const background = "#f6ea50";
 let canvas: p5.Renderer;
 // let p;
 let angle = 0;
+let aVelocity = 0.05;
 let r = 0;
 const increment = 0.03;
 
@@ -26,7 +27,7 @@ let attractor: Mover;
 const movers: Mover[] = [];
 
 const s = (sk: p5) => {
-  sk.frameRate(120);
+  // sk.frameRate(120);
   sk.preload = () => {
     // shader = sk.loadShader("./shaders/shader.vert", "./shaders/shader.frag");
   };
@@ -63,38 +64,42 @@ const s = (sk: p5) => {
       return;
     }
 
-    // sk.background(background);
+    sk.background(background);
     const mouse = sk.createVector(sk.mouseX, sk.mouseY); // get the mouse location
-    let x = r * sk.cos(angle);
-    let y = r * sk.sin(angle);
+    // let period = 120;
+    // let amplitude = 400;
+    // // Calculating horizontal location according to the formula for simple harmonic motion
+    // let x = amplitude * sk.cos(angle);
+    // angle += aVelocity;
 
-    sk.noStroke();
-    sk.fill(0);
-    sk.ellipse(x + sk.width / 2, y + sk.height / 2, 10, 10);
+    // sk.ellipseMode(sk.CENTER);
 
-    angle += 0.01;
-    r += 0.03;
-    //   gravity.applyAll(sk, movers);
-    //   attractor.step(sk);
-    //   attractor.render(sk);
-    //   movers.forEach((el) => {
-    //     el.step(sk);
-    //     el.render(sk);
-    //   });
+    // sk.stroke(0);
+    // sk.fill(175);
+    // sk.translate(sk.width / 2, sk.height / 2);
+    // sk.line(0, 0, x, 0);
+    // sk.ellipse(x, 0, 20, 20);
+    gravity.applyAll(sk, movers);
+    attractor.step(sk);
+    attractor.render(sk);
+    movers.forEach((el) => {
+      el.step(sk);
+      el.render(sk);
+    });
 
-    //   /////////////////////
-    //   // sk.translate(sk.width / 2, sk.height / 2);
-    //   // sk.rotate(angle);
-    //   // // const center = sk.createVector(sk.width / 2, sk.height / 2);
+    /////////////////////
+    // sk.translate(sk.width / 2, sk.height / 2);
+    // sk.rotate(angle);
+    // // const center = sk.createVector(sk.width / 2, sk.height / 2);
 
-    //   // sk.strokeWeight(2);
+    // sk.strokeWeight(2);
 
-    //   // sk.stroke(150);
-    //   // sk.fill(220);
-    //   // sk.line(-50, 0, 50, 0);
+    // sk.stroke(150);
+    // sk.fill(220);
+    // sk.line(-50, 0, 50, 0);
 
-    //   // sk.ellipse(50, 0, 30, 30);
-    //   // sk.ellipse(-50, 0, 30, 30);
+    // sk.ellipse(50, 0, 30, 30);
+    // sk.ellipse(-50, 0, 30, 30);
 
     //   // angle += increment;
     //   ///////////////////////
