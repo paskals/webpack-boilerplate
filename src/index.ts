@@ -12,12 +12,18 @@ const filePrefix = "chapter-2";
 let frame = 1;
 const frames = 360;
 
+const gravity = new Gravity(0.1);
+
 let running = true;
 const background = "#f6ea50";
 let canvas: p5.Renderer;
 // let p;
-var angle = 0;
+let angle = 0;
 const increment = 0.03;
+
+let attractor: Mover;
+const movers: Mover[] = [];
+
 const s = (sk: p5) => {
   sk.preload = () => {
     // shader = sk.loadShader("./shaders/shader.vert", "./shaders/shader.frag");
@@ -30,6 +36,24 @@ const s = (sk: p5) => {
     if (record) {
       sk.frameRate(1);
     }
+
+    attractor = new Mover(sk, 100, sk.width / 2, sk.height / 2, 50);
+    attractor.step(sk);
+    const middle = sk.createVector(sk.width / 2, sk.height / 2);
+    for (let i = 0; i < 50; i++) {
+      const mover = new Mover(
+        sk,
+        sk.random(0.01, 3),
+        sk.random(sk.width / 4, sk.width / 2 + sk.width / 4),
+        sk.random(sk.height / 4, sk.height / 2 + sk.height / 4)
+      );
+      // const force = p5.Vector.sub(mover.position, middle);
+      // force.normalize();
+      // force.rotate(90);
+      // force.mult(0.5);
+      // mover.applyForce(force);
+      movers.push(mover);
+    }
   };
   /// DRAW///
   sk.draw = () => {
@@ -39,21 +63,30 @@ const s = (sk: p5) => {
 
     sk.background(background);
     const mouse = sk.createVector(sk.mouseX, sk.mouseY); // get the mouse location
+
+    gravity.applyAll(sk, movers);
+    attractor.step(sk);
+    attractor.render(sk);
+    movers.forEach((el) => {
+      el.step(sk);
+      el.render(sk);
+    });
+
     /////////////////////
-    sk.translate(sk.width / 2, sk.height / 2);
-    sk.rotate(angle);
-    // const center = sk.createVector(sk.width / 2, sk.height / 2);
+    // sk.translate(sk.width / 2, sk.height / 2);
+    // sk.rotate(angle);
+    // // const center = sk.createVector(sk.width / 2, sk.height / 2);
 
-    sk.strokeWeight(2);
+    // sk.strokeWeight(2);
 
-    sk.stroke(150);
-    sk.fill(220);
-    sk.line(-50, 0, 50, 0);
+    // sk.stroke(150);
+    // sk.fill(220);
+    // sk.line(-50, 0, 50, 0);
 
-    sk.ellipse(50, 0, 30, 30);
-    sk.ellipse(-50, 0, 30, 30);
+    // sk.ellipse(50, 0, 30, 30);
+    // sk.ellipse(-50, 0, 30, 30);
 
-    angle += increment;
+    // angle += increment;
     ///////////////////////
     if (record) {
       recordFrame();

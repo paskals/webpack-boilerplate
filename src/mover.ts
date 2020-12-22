@@ -1,6 +1,7 @@
 import p5 from "p5";
 import Liquid from "./liquid";
 import Massive from "./massive";
+import Rotating from "./rotating";
 
 const colors = [
   "#feae34",
@@ -11,7 +12,7 @@ const colors = [
   "#fee761",
 ];
 
-export default class Mover extends Massive {
+export default class Mover extends Rotating {
   oldPositions: p5.Vector[];
   topSpeed: number;
   fill: string;
@@ -23,11 +24,11 @@ export default class Mover extends Massive {
     m: number,
     x: number,
     y: number,
-    shader: p5.Shader,
+    // shader?: p5.Shader,
     radius?: number
   ) {
     super(sk, m, x, y);
-    this.shader = shader;
+    // this.shader = shader;
 
     this.oldPositions = [sk.createVector(x, y)];
 
@@ -43,15 +44,21 @@ export default class Mover extends Massive {
   render(sk: p5) {
     // sk.shader(this.shader);
     // this.drawLine(sk);
-
-    sk.strokeWeight(2);
-
+    sk.rectMode(sk.CENTER);
     sk.stroke(200);
     sk.fill(this.fill);
-
+    sk.strokeWeight(2);
     const radius = this.radius ? this.radius : this.mass * 10;
 
-    sk.ellipse(this.position.x, this.position.y, radius, radius);
+    sk.push();
+    sk.translate(this.position.x, this.position.y);
+    sk.rotate(this.angle);
+
+    sk.rect(0, 0, radius, radius);
+
+    sk.pop();
+
+    // sk.ellipse(this.position.x, this.position.y, radius, radius);
 
     // sk.rect(0, 0, sk.width, sk.height);
   }
@@ -138,6 +145,12 @@ export default class Mover extends Massive {
     // Limit top speed
     this.velocity.limit(this.topSpeed);
     this.position.add(this.velocity);
+
+    this.aAcceleration = this.acceleration.x / 100;
+
+    this.aVelocity += this.aAcceleration;
+    // this.aVelocity = sk.constrain(this.aVelocity, -0.1, 0.1);
+    this.angle += this.aVelocity;
 
     // Reset acceleration at the end of update
     // This enables adding forces before update
