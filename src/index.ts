@@ -19,12 +19,14 @@ const background = "#f6ea50";
 let canvas: p5.Renderer;
 // let p;
 let angle = 0;
+let r = 0;
 const increment = 0.03;
 
 let attractor: Mover;
 const movers: Mover[] = [];
 
 const s = (sk: p5) => {
+  sk.frameRate(120);
   sk.preload = () => {
     // shader = sk.loadShader("./shaders/shader.vert", "./shaders/shader.frag");
   };
@@ -61,39 +63,47 @@ const s = (sk: p5) => {
       return;
     }
 
-    sk.background(background);
+    // sk.background(background);
     const mouse = sk.createVector(sk.mouseX, sk.mouseY); // get the mouse location
+    let x = r * sk.cos(angle);
+    let y = r * sk.sin(angle);
 
-    gravity.applyAll(sk, movers);
-    attractor.step(sk);
-    attractor.render(sk);
-    movers.forEach((el) => {
-      el.step(sk);
-      el.render(sk);
-    });
+    sk.noStroke();
+    sk.fill(0);
+    sk.ellipse(x + sk.width / 2, y + sk.height / 2, 10, 10);
 
-    /////////////////////
-    // sk.translate(sk.width / 2, sk.height / 2);
-    // sk.rotate(angle);
-    // // const center = sk.createVector(sk.width / 2, sk.height / 2);
+    angle += 0.01;
+    r += 0.03;
+    //   gravity.applyAll(sk, movers);
+    //   attractor.step(sk);
+    //   attractor.render(sk);
+    //   movers.forEach((el) => {
+    //     el.step(sk);
+    //     el.render(sk);
+    //   });
 
-    // sk.strokeWeight(2);
+    //   /////////////////////
+    //   // sk.translate(sk.width / 2, sk.height / 2);
+    //   // sk.rotate(angle);
+    //   // // const center = sk.createVector(sk.width / 2, sk.height / 2);
 
-    // sk.stroke(150);
-    // sk.fill(220);
-    // sk.line(-50, 0, 50, 0);
+    //   // sk.strokeWeight(2);
 
-    // sk.ellipse(50, 0, 30, 30);
-    // sk.ellipse(-50, 0, 30, 30);
+    //   // sk.stroke(150);
+    //   // sk.fill(220);
+    //   // sk.line(-50, 0, 50, 0);
 
-    // angle += increment;
-    ///////////////////////
-    if (record) {
-      recordFrame();
-      if (frame === frames) {
-        sk.noLoop();
-      }
-    }
+    //   // sk.ellipse(50, 0, 30, 30);
+    //   // sk.ellipse(-50, 0, 30, 30);
+
+    //   // angle += increment;
+    //   ///////////////////////
+    //   if (record) {
+    //     recordFrame();
+    //     if (frame === frames) {
+    //       sk.noLoop();
+    //     }
+    //   }
   };
 
   sk.mouseClicked = () => {
