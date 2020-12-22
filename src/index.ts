@@ -19,7 +19,7 @@ const background = "#f6ea50";
 let canvas: p5.Renderer;
 // let p;
 let angle = 0;
-let aVelocity = 0.05;
+let aVelocity = 0.1;
 let r = 0;
 const increment = 0.03;
 
@@ -66,26 +66,38 @@ const s = (sk: p5) => {
 
     sk.background(background);
     const mouse = sk.createVector(sk.mouseX, sk.mouseY); // get the mouse location
-    // let period = 120;
-    // let amplitude = 400;
-    // // Calculating horizontal location according to the formula for simple harmonic motion
+    let period = 120;
+    let amplitude = 300;
+    angle = sk.millis() / 1000;
+    // Calculating horizontal location according to the formula for simple harmonic motion
     // let x = amplitude * sk.cos(angle);
     // angle += aVelocity;
 
-    // sk.ellipseMode(sk.CENTER);
+    sk.ellipseMode(sk.CENTER);
+    sk.stroke(150);
+    sk.strokeWeight(2);
+    // sk.fill(220, 200);
+    sk.noFill();
 
-    // sk.stroke(0);
-    // sk.fill(175);
-    // sk.translate(sk.width / 2, sk.height / 2);
-    // sk.line(0, 0, x, 0);
-    // sk.ellipse(x, 0, 20, 20);
-    gravity.applyAll(sk, movers);
-    attractor.step(sk);
-    attractor.render(sk);
-    movers.forEach((el) => {
-      el.step(sk);
-      el.render(sk);
-    });
+    sk.beginShape();
+    for (let x = 0; x <= sk.width; x += 10) {
+      // 1) Calculate the y location according to amplitude and sine of the angle.
+      let y = amplitude * sk.sin(angle) + sk.height / 2;
+
+      // 2) Draw a circle at the (x,y) location.
+      // sk.ellipse(x, y + sk.height / 2, 48, 48);
+      sk.vertex(x, y);
+      // 3) Increment the angle according to angular velocity.
+      angle += aVelocity;
+    }
+    sk.endShape();
+    // gravity.applyAll(sk, movers);
+    // attractor.step(sk);
+    // attractor.render(sk);
+    // movers.forEach((el) => {
+    //   el.step(sk);
+    //   el.render(sk);
+    // });
 
     /////////////////////
     // sk.translate(sk.width / 2, sk.height / 2);
