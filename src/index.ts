@@ -7,6 +7,7 @@ import Liquid from "./liquid";
 import Mover from "./mover";
 import Gravity from "./gravity";
 import Pendulum from "./pendulum";
+import Spring from "./classes/spring";
 
 const record = false;
 const filePrefix = "chapter-2";
@@ -28,6 +29,7 @@ let attractor: Mover;
 const movers: Mover[] = [];
 
 let pendulum: Pendulum;
+let spring: Spring;
 const s = (sk: p5) => {
   // sk.frameRate(120);
   sk.preload = () => {
@@ -42,12 +44,12 @@ const s = (sk: p5) => {
       sk.frameRate(1);
     }
 
-    attractor = new Mover(sk, 100, sk.width / 2, sk.height / 2, 50);
+    attractor = new Mover(sk, 100, sk.width / 2 - 200, sk.height / 2, 50);
     attractor.step(sk);
     const middle = sk.createVector(sk.width / 2, sk.height / 2);
 
     pendulum = new Pendulum(sk, 100, middle.x, middle.y);
-
+    spring = new Spring(sk, middle.x, 50, 100);
     for (let i = 0; i < 50; i++) {
       const mover = new Mover(
         sk,
@@ -70,6 +72,13 @@ const s = (sk: p5) => {
     }
     // sk.blendMode(sk.SOFT_LIGHT);
     sk.background(background);
+    attractor.step(sk);
+    attractor.applyGravity(sk.createVector(0, 1));
+    attractor.applyFriction(3);
+    spring.connect(sk, attractor);
+    spring.displayLine(sk, attractor);
+    spring.display(sk);
+    attractor.render(sk);
 
     // sk.blendMode(sk.BLEND);
     // const mouse = sk.createVector(sk.mouseX, sk.mouseY); // get the mouse location
@@ -80,8 +89,8 @@ const s = (sk: p5) => {
     // Calculating horizontal location according to the formula for simple harmonic motion
     // let x = amplitude * sk.cos(angle);
     // angle += aVelocity;
-    pendulum.step(sk);
-    pendulum.render(sk);
+    // pendulum.step(sk);
+    // pendulum.render(sk);
 
     // sk.ellipseMode(sk.CENTER);
     // sk.stroke(100);
