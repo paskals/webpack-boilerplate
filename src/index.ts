@@ -6,6 +6,7 @@ import p5 from "p5";
 import Liquid from "./liquid";
 import Mover from "./mover";
 import Gravity from "./gravity";
+import Pendulum from "./pendulum";
 
 const record = false;
 const filePrefix = "chapter-2";
@@ -15,7 +16,7 @@ const frames = 360;
 const gravity = new Gravity(0.1);
 
 let running = true;
-const background = "#f6ea5010";
+const background = "#f6ea50";
 let canvas: p5.Renderer;
 // let p;
 let angle = 0;
@@ -25,6 +26,8 @@ const increment = 0.03;
 
 let attractor: Mover;
 const movers: Mover[] = [];
+
+let pendulum: Pendulum;
 const s = (sk: p5) => {
   // sk.frameRate(120);
   sk.preload = () => {
@@ -42,6 +45,9 @@ const s = (sk: p5) => {
     attractor = new Mover(sk, 100, sk.width / 2, sk.height / 2, 50);
     attractor.step(sk);
     const middle = sk.createVector(sk.width / 2, sk.height / 2);
+
+    pendulum = new Pendulum(sk, 100, middle.x, middle.y);
+
     for (let i = 0; i < 50; i++) {
       const mover = new Mover(
         sk,
@@ -62,36 +68,38 @@ const s = (sk: p5) => {
     if (!running) {
       return;
     }
-    sk.blendMode(sk.OVERLAY);
+    // sk.blendMode(sk.SOFT_LIGHT);
     sk.background(background);
 
-    sk.blendMode(sk.BLEND);
-    const mouse = sk.createVector(sk.mouseX, sk.mouseY); // get the mouse location
-    let period = 120;
-    let amplitude = 600;
+    // sk.blendMode(sk.BLEND);
+    // const mouse = sk.createVector(sk.mouseX, sk.mouseY); // get the mouse location
+    // let period = 120;
+    // let amplitude = 600;
 
-    angle = 0;
+    // angle = 0;
     // Calculating horizontal location according to the formula for simple harmonic motion
     // let x = amplitude * sk.cos(angle);
     // angle += aVelocity;
+    pendulum.step(sk);
+    pendulum.render(sk);
 
-    sk.ellipseMode(sk.CENTER);
-    sk.stroke(100);
-    sk.strokeWeight(2);
-    // sk.fill(220, 200);
-    sk.noFill();
-    sk.beginShape();
-    for (let x = 0; x <= sk.width; x += 10) {
-      // 1) Calculate the y location according to amplitude and sine of the angle.
-      let y = amplitude * sk.noise(angle, sk.millis() / 1000) + 200;
+    // sk.ellipseMode(sk.CENTER);
+    // sk.stroke(100);
+    // sk.strokeWeight(2);
+    // // sk.fill(220, 200);
+    // sk.noFill();
+    // sk.beginShape();
+    // for (let x = 0; x <= sk.width; x += 10) {
+    //   // 1) Calculate the y location according to amplitude and sine of the angle.
+    //   let y = amplitude * sk.noise(angle, sk.millis() / 1000) + 200;
 
-      // 2) Draw a circle at the (x,y) location.
-      // sk.ellipse(x, y + sk.height / 2, 48, 48);
-      sk.curveVertex(x, y);
-      // 3) Increment the angle according to angular velocity.
-      angle += aVelocity;
-    }
-    sk.endShape();
+    //   // 2) Draw a circle at the (x,y) location.
+    //   // sk.ellipse(x, y + sk.height / 2, 48, 48);
+    //   sk.curveVertex(x, y);
+    //   // 3) Increment the angle according to angular velocity.
+    //   angle += aVelocity;
+    // }
+    // sk.endShape();
     // gravity.applyAll(sk, movers);
     // attractor.step(sk);
     // attractor.render(sk);
